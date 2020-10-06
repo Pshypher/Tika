@@ -36,4 +36,8 @@ interface TaskDao {
     @Transaction
     @Query("SELECT * FROM task")
     fun getTaskWithSupport(): List<TaskWithSupport>
+
+    @Transaction
+    @Query("SELECT * FROM daily_activity")
+    fun getActivities(): List<ActivityWithTasks>
 }
