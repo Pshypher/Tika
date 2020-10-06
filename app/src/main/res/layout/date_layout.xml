@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/day_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/dark_gray_text_color"
+        android:fontFamily="@font/barlow_condensed_medium"
+        android:paddingStart="0dp"
+        android:paddingEnd="@dimen/view_margin_small"
+        android:textSize="@dimen/regular_text_size"
+        tools:text="Today" />
+
+    <TextView
+        android:id="@+id/date_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/dark_gray_text_color"
+        android:fontFamily="@font/barlow_condensed_regular"
+        android:textSize="@dimen/regular_text_size"
+        tools:text="01 . 10 . 20" />
+</LinearLayout>

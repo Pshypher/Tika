@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="136dp"
+    android:layout_height="68dp"
+    android:orientation="vertical"
+    android:background="@drawable/task_item_outline"
+    android:elevation="4dp"
+    tools:ignore="UnusedAttribute">
+
+    <TextView
+        android:id="@+id/task_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:fontFamily="@font/poppins_semibold"
+        android:layout_marginLeft="@dimen/view_margin_small"
+        android:layout_marginTop="@dimen/view_margin_small"
+        android:layout_marginBottom="@dimen/view_margin"
+        android:layout_marginRight="@dimen/view_margin"
+        android:textSize="@dimen/regular_text_size"
+        android:layout_gravity="start"
+        tools:text="Learn HTML &amp; CSS"
+        android:textColor="@color/colorAccent"
+        android:gravity="top" />
+
+    <TextView
+        android:id="@+id/date_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:textSize="@dimen/text_size_small"
+        android:fontFamily="@font/barlow_semi_bold"
+        android:layout_marginStart="@dimen/view_margin_small"
+        android:textColor="@color/dark_gray_text_color"
+        tools:text="OCT 16" />
+</LinearLayout>
