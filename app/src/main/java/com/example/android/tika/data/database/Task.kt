@@ -11,11 +11,9 @@ data class Task(
 
     var description: String?,
 
-    var date: Date,
+    var startTime: Date,
 
-    var startTime: Long,
-
-    var endTime: Long,
+    var endTime: Date,
 
     var userTaskId: Long,
 

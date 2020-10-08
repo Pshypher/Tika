@@ -9,4 +9,5 @@
     <dimen name="view_size">8dp</dimen>
     <dimen name="text_size_extra_small">8sp</dimen>
     <dimen name="text_size_large">18sp</dimen>
+    <dimen name="view_margin_large">24dp</dimen>
 </resources>

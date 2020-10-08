@@ -3,8 +3,8 @@
     <string name="welcome_message">Hey %1$s!</string>
     <string name="activity_panel">Activity Panel</string>
     <string name="no_progress_hint">Progress Awaits You!</string>
-    <string name="today">Today %1$s</string>
-    <string name="yesterday">Yesterday %1$s</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
     <string name="progress_ratio">%1$d Complete out of %2$d</string>
     <string name="num_comments">%1$d Comments</string>
     <string name="fab_text">Set Goal</string>

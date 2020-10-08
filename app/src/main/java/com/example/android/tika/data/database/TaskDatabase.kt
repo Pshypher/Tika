@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.*
 
 @Database(entities = [Comment::class, Task::class,
-    User::class, TaskSupportCrossRef::class], version = 1, exportSchema = false)
+    User::class, TaskSupportCrossRef::class, Activity::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class TaskDatabase : RoomDatabase() {
     abstract val taskDao: TaskDao

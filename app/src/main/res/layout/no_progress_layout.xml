@@ -10,7 +10,7 @@
         android:id="@+id/no_progress_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/edit_text_color"
+        android:background="@color/gray_background_color"
         android:paddingTop="@dimen/text_padding"
         android:fontFamily="@font/barlow_condensed_semi_bold"
         android:textSize="@dimen/text_size_small"
