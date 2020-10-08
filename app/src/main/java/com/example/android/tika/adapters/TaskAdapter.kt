@@ -1,77 +1,76 @@
 package com.example.android.tika.adapters
 
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.LinearLayout
+import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.android.tika.data.models.Comment
+import com.example.android.tika.R
 import com.example.android.tika.data.models.Task
-import com.example.android.tika.databinding.CommentLayoutBinding
-import com.example.android.tika.databinding.TaskTitleItemBinding
-import java.lang.IllegalArgumentException
+import com.example.android.tika.data.models.formatDate
+import com.example.android.tika.databinding.TaskItemBinding
 
-class TaskAdapter(private val items: List<Any>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class TaskAdapter(private val tasks: MutableList<Task>) :
+    RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
-    companion object {
-        const val TASK = 0
-        const val COMMENT = 1
+    init {
+        notifyDataSetChanged()
     }
 
-    class TitleViewHolder(private val itemBinding: TaskTitleItemBinding) :
-            RecyclerView.ViewHolder(itemBinding.root) {
-        fun bind(item: Any) {
+    class TaskDiffCallBack(private val newItems: List<Task>, private val oldItems: List<Task>) :
+        DiffUtil.Callback() {
+        override fun getOldListSize(): Int = oldItems.size
 
-            val resources = itemBinding.root.context.resources
+        override fun getNewListSize(): Int = newItems.size
 
-            itemBinding.apply {
-                titleText.text = (item as Task).title
-                if (adapterPosition == 0) {
-                    val layoutParams = LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT)
-                    layoutParams.topMargin = TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP, 8F, resources.displayMetrics).toInt()
-                    layoutParams.leftMargin = TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP, 8F, resources.displayMetrics).toInt()
-                    titleText.layoutParams = layoutParams
-                }
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val old = oldItems[oldItemPosition]
+            val new = newItems[newItemPosition]
+            return old.startTime == new.startTime && old.endTime == new.endTime
+                    && old.title == new.title
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val old = oldItems[oldItemPosition]
+            val new = newItems[newItemPosition]
+            return old == new
+        }
+
+    }
+
+    class TaskViewHolder(private val binding: TaskItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(task: Task) {
+            task.apply {
+                val time = startTime
+                date = formatDate(time)
             }
+
+            binding.task = task
+            binding.executePendingBindings()
         }
     }
 
-    class CommentViewHolder(private val itemBinding: CommentLayoutBinding) :
-            RecyclerView.ViewHolder(itemBinding.root) {
-        fun bind(item: Any) {
-            val comment = item as Comment
-            itemBinding.apply {
-                authorText.text = comment.author.firstName
-                commentText.text = comment.message
-            }
-        }
-
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
+        val layoutInflater = LayoutInflater.from(parent.context)
+        val binding: TaskItemBinding =
+            DataBindingUtil.inflate(layoutInflater, R.layout.task_item, parent, false)
+        return TaskViewHolder(binding)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        return when (viewType) {
-            TASK -> TitleViewHolder(TaskTitleItemBinding.inflate(inflater, parent, false))
-            COMMENT -> CommentViewHolder(CommentLayoutBinding.inflate(inflater, parent, false))
-            else -> throw IllegalArgumentException("Unknown ViewType >>> $viewType")
-        }
-    }
+    override fun onBindViewHolder(holder: TaskViewHolder, position: Int) =
+        holder.bind(tasks[position])
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (holder.itemViewType) {
-            TASK -> (holder as TitleViewHolder).bind(items[position])
-            COMMENT -> (holder as CommentViewHolder).bind(items[position])
-            else ->  throw IllegalArgumentException("Unknown ViewType >>> ${ holder.itemViewType }")
-        }
-    }
+    override fun getItemCount(): Int = tasks.size
 
-    override fun getItemCount(): Int = items.size
+    fun addAll(tasks: List<Task>) {
+        val diffCallBack = TaskDiffCallBack(tasks, this.tasks)
+        val diffResult = DiffUtil.calculateDiff(diffCallBack)
 
-    override fun getItemViewType(position: Int): Int {
-        return if (items[position] is Task) TASK else COMMENT
+        this.tasks.addAll(tasks)
+
+        // calls the adapter's notify methods after diff is calculated
+        diffResult.dispatchUpdatesTo(this)
     }
 }

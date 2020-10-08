@@ -10,11 +10,11 @@
         android:id="@+id/no_progress_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/gray_background_color"
+        android:background="@color/gray_bg_color"
         android:paddingTop="@dimen/text_padding"
         android:fontFamily="@font/barlow_condensed_semi_bold"
         android:textSize="@dimen/text_size_small"
         android:paddingStart="@dimen/view_margin"
-        android:textColor="@color/light_gray_text_color"
+        android:textColor="@color/light_gray_fg_color"
         android:text="@string/no_progress_hint" />
 </androidx.cardview.widget.CardView>

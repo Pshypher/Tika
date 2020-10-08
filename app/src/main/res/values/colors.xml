@@ -4,7 +4,8 @@
     <color name="colorPrimaryDark">#75A4FF</color>
     <color name="colorAccent">#2B66D9</color>
 
-    <color name="dark_gray_text_color">#5A5A5A</color>
-    <color name="gray_background_color">#E5E5E5</color>
-    <color name="light_gray_text_color">#40000000</color>
+    <color name="dark_gray_fg_color">#5A5A5A</color>
+    <color name="gray_bg_color">#E5E5E5</color>
+    <color name="light_gray_fg_color">#40000000</color>
+    <color name="light_gray_bg_color">#F2F2F2</color>
 </resources>

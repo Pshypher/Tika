@@ -30,7 +30,7 @@ fun formatDate(date: Date): String {
  * @param tasks the list of task
  * @return a list of titles and comments
  */
-fun flatMapTaskObject(tasks: List<Task>): List<Any> {
+fun flatMapTaskObject(tasks: List<Task>): MutableList<Any> {
     val items = mutableListOf<Any>()
     tasks.forEach { task->
         items.add(task.title)

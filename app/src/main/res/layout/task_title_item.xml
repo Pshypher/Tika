@@ -11,10 +11,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins_semibold"
-            android:layout_marginStart="@dimen/view_margin_small"
-            android:layout_marginTop="@dimen/view_margin_large"
             android:textSize="@dimen/text_size_small"
-            android:textColor="@color/dark_gray_text_color"
+            android:textColor="@color/dark_gray_fg_color"
             tools:text="Complete HTML &amp; CSS in 30 days" />
     </LinearLayout>
 </layout>
