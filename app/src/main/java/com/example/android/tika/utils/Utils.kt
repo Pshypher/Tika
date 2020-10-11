@@ -1,43 +1,43 @@
 package com.example.android.tika.utils
 
-import com.example.android.tika.data.models.Task
-import java.text.SimpleDateFormat
-import java.util.*
+import android.content.Context
+import com.example.android.tika.R
+import com.example.android.tika.data.database.Comment
 
-
-/**
- * Computes the total number of comments in tasks
- * @param tasks scheduled tasks per day
- * @return number of comments from friends for the daily tasks
- */
-fun totalNumberOfComments(tasks: List<Task>): Int {
-    var total = 0
-    tasks.forEach {
-        total = total.plus(it.comments.size)
-    }
-    return total
-}
-
-fun formatDate(date: Date): String {
-    val pattern = "YY . MM . dd"
-    val formatter = SimpleDateFormat(pattern, Locale.getDefault())
-    return formatter.format(date)
-}
+import com.example.android.tika.data.database.Task
+import com.example.android.tika.data.database.TaskDatabase
+import com.example.android.tika.data.database.User
 
 /**
  * Transforms the tasks into a flat list containing a
- * task title and all comments per task
- * @param tasks the list of task
+ * task.db title and all comments per task.db
+ * @param tasks the list of task.db
  * @return a list of titles and comments
  */
-fun flatMapTaskObject(tasks: List<Task>): MutableList<Any> {
+fun flatMapTaskObject(context: Context, tasks: List<Task>): MutableList<Any> {
     val items = mutableListOf<Any>()
-    tasks.forEach { task->
+    val dao = TaskDatabase.getInstance(context.applicationContext).taskDao
+    tasks.forEach { task ->
+        val taskWithComments =  dao.getTaskWithComment(task.taskId)
         items.add(task.title)
-        task.comments.forEach { comment ->
+        taskWithComments.comments.forEach { comment ->
             items.add(comment)
         }
     }
 
     return items
+}
+
+/**
+ * Gets the name of a [User] who authored the passed in [Comment]
+ * @param context application context to access the [TaskDatabase]
+ * @param comment remark made by a User
+ * @return name of the author
+ */
+fun getAuthor(context: Context, comment: Comment): String {
+    val dao = TaskDatabase.getInstance(context.applicationContext).taskDao
+    val comments = dao.getCommentsWithAuthor(comment.commentId)
+    val author = comments.colleague
+    val name = author.firstName ?: author.lastName
+    return name ?: context.getString(R.string.anonymous)
 }

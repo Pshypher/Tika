@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <variable
+            name="comment"
+            type="com.example.android.tika.data.presentation.CommentAdapterItem" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -23,8 +29,9 @@
             android:paddingTop="8dp"
             android:fontFamily="@font/barlow_medium"
             android:gravity="top"
+            android:text="@{comment.author}"
             android:textColor="@color/colorAccent"
-            android:textSize="@dimen/text_size_extra_small"
+            android:textSize="@dimen/text_extra_small"
             app:layout_constraintStart_toEndOf="@+id/bullet"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Temiloluwa" />
@@ -37,7 +44,8 @@
             android:layout_marginEnd="@dimen/view_margin_small"
             android:fontFamily="@font/barlow_condensed_light_italic"
             android:textColor="@color/dark_gray_fg_color"
-            android:textSize="@dimen/text_size_small"
+            android:textSize="@dimen/text_small"
+            android:text="@{comment.comment.message}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"

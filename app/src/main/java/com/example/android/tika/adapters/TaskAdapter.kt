@@ -6,28 +6,27 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.tika.R
-import com.example.android.tika.data.models.Task
-import com.example.android.tika.data.models.formatDate
+import com.example.android.tika.data.presentation.TaskAdapterItem
 import com.example.android.tika.databinding.TaskItemBinding
 
-class TaskAdapter(private val tasks: MutableList<Task>) :
+class TaskAdapter(private val tasks: MutableList<TaskAdapterItem>) :
     RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
     init {
         notifyDataSetChanged()
     }
 
-    class TaskDiffCallBack(private val newItems: List<Task>, private val oldItems: List<Task>) :
+    class TaskDiffCallBack(private val newItems: List<TaskAdapterItem>,
+                           private val oldItems: List<TaskAdapterItem>) :
         DiffUtil.Callback() {
-        override fun getOldListSize(): Int = oldItems.size
+        override fun getOldListSize(): Int = oldItems.size ?: 0
 
         override fun getNewListSize(): Int = newItems.size
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val old = oldItems[oldItemPosition]
             val new = newItems[newItemPosition]
-            return old.startTime == new.startTime && old.endTime == new.endTime
-                    && old.title == new.title
+            return old.taskId == new.taskId
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
@@ -35,19 +34,13 @@ class TaskAdapter(private val tasks: MutableList<Task>) :
             val new = newItems[newItemPosition]
             return old == new
         }
-
     }
 
     class TaskViewHolder(private val binding: TaskItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(task: Task) {
-            task.apply {
-                val time = startTime
-                date = formatDate(time)
-            }
-
-            binding.task = task
+        fun bind(item: TaskAdapterItem) {
+            binding.task = item
             binding.executePendingBindings()
         }
     }
@@ -64,7 +57,7 @@ class TaskAdapter(private val tasks: MutableList<Task>) :
 
     override fun getItemCount(): Int = tasks.size
 
-    fun addAll(tasks: List<Task>) {
+    fun addAll(tasks: List<TaskAdapterItem>) {
         val diffCallBack = TaskDiffCallBack(tasks, this.tasks)
         val diffResult = DiffUtil.calculateDiff(diffCallBack)
 

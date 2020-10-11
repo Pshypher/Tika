@@ -6,38 +6,52 @@ import androidx.room.*
 interface TaskDao {
 
     @Insert
-    fun addComment(comment: Comment)
+    fun insertUser(user: User)
 
     @Insert
-    fun addTask(task: Task)
+    fun insertComment(comment: Comment)
 
-    @Update
+    @Insert
+    fun insertTask(task: Task)
+
+    @Insert
+    fun insertUsers(users: List<User>)
+
+    @Insert
+    fun insertActivities(activities: List<Activity>)
+
+    @Insert
+    fun insertComments(comments: List<Comment>)
+
+    @Insert
+    fun insertTasks(tasks: List<Task>)
+
+    @Insert
+    fun insertCrossRef(refs: List<TaskSupportCrossRef>)
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateTask(task: Task)
 
-    @Query("SELECT * FROM task")
+    @Query("SELECT * FROM Task")
     fun getTasks(): List<Task>
 
     @Transaction
-    @Query("SELECT * FROM comment")
-    fun getCommentAndAuthor(): List<CommentAndAuthor>
+    @Query("SELECT * FROM User WHERE userId = :key")
+    fun getCommentsWithAuthor(key: Long): ColleagueWithComments
 
     @Transaction
-    @Query("SELECT * FROM task")
-    fun getTasksWithComment(): List<TaskWithComments>
+    @Query("SELECT * FROM Task WHERE taskId = :key")
+    fun getTaskWithComment(key: Long): TaskWithComments
 
     @Transaction
-    @Query("SELECT * FROM user")
-    fun getUserTasks(): List<UserTasks>
-
-    @Transaction
-    @Query("SELECT * FROM user")
+    @Query("SELECT * FROM User")
     fun getColleagueWithTasks(): List<ColleagueWithTasks>
 
     @Transaction
-    @Query("SELECT * FROM task")
+    @Query("SELECT * FROM Task")
     fun getTaskWithSupport(): List<TaskWithSupport>
 
     @Transaction
-    @Query("SELECT * FROM daily_activity")
+    @Query("SELECT * FROM Activity")
     fun getActivities(): List<ActivityWithTasks>
 }

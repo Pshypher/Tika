@@ -1,34 +1,26 @@
 package com.example.android.tika.data.database
 
 import androidx.room.Embedded
+import androidx.room.Entity
 import androidx.room.Junction
 import androidx.room.Relation
-
-data class UserTasks(
-    @Embedded val user: User,
-    @Relation(
-        parentColumn = "userId",
-        entityColumn = "userTaskId"
-    )
-    val tasks: List<Task>
-)
 
 data class TaskWithComments(
     @Embedded val task: Task,
     @Relation(
         parentColumn = "taskId",
-        entityColumn = "taskCommentId"
+        entityColumn = "taskId"
     )
     val comments: List<Comment>
 )
 
-data class CommentAndAuthor(
-    @Embedded val comment: Comment,
+data class ColleagueWithComments(
+    @Embedded val colleague: User,
     @Relation(
-        parentColumn = "commentId",
-        entityColumn = "commentId"
+        parentColumn = "userId",
+        entityColumn = "authorId"
     )
-    val user: User
+    val comments: List<Comment>
 )
 
 data class TaskWithSupport(
@@ -55,7 +47,13 @@ data class ActivityWithTasks(
     @Embedded val activity: Activity,
     @Relation(
         parentColumn = "activityId",
-        entityColumn = "activityTaskId"
+        entityColumn = "activityId"
     )
     val tasks: List<Task>
 )
+@Entity(primaryKeys = ["userId", "taskId"])
+data class TaskSupportCrossRef(
+    val userId: Long = 0L,
+    val taskId: Long
+)
+

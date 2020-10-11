@@ -6,18 +6,28 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.android.tika.data.models.Comment
-import com.example.android.tika.data.models.Task
+import com.example.android.tika.data.database.Comment
+import com.example.android.tika.data.presentation.CommentAdapterItem
 import com.example.android.tika.databinding.CommentLayoutBinding
 import com.example.android.tika.databinding.TaskTitleItemBinding
+import com.example.android.tika.utils.getAuthor
+import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
 
-class ActivityDetailAdapter(private val items: MutableList<Any>)
+class TaskWithCommentAdapter(private val items: MutableList<Any>)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
         const val TITLE = 0
         const val COMMENT = 1
+    }
+
+    private val job = Job()
+    private val uiScope = CoroutineScope(Dispatchers.Main + job)
+
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        job.cancel()
     }
 
     init {
@@ -64,11 +74,19 @@ class ActivityDetailAdapter(private val items: MutableList<Any>)
 
     class CommentViewHolder(private val itemBinding: CommentLayoutBinding) :
             RecyclerView.ViewHolder(itemBinding.root) {
-        fun bind(item: Any) {
-            val comment = item as Comment
-            itemBinding.apply {
-                authorText.text = comment.author.firstName
-                commentText.text = comment.message
+        fun bind(scope: CoroutineScope, item: Any) {
+            scope.launch {
+                val entity = item as Comment
+                val comment = CommentAdapterItem(entity, null)
+                comment.author = author(entity)
+                itemBinding.comment = comment
+            }
+        }
+
+        suspend fun author(entity: Comment): String {
+            return withContext(Dispatchers.IO) {
+                val context = itemBinding.root.context
+                getAuthor(context, entity)
             }
         }
     }
@@ -85,7 +103,7 @@ class ActivityDetailAdapter(private val items: MutableList<Any>)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
             TITLE -> (holder as TitleViewHolder).bind(items[position])
-            COMMENT -> (holder as CommentViewHolder).bind(items[position])
+            COMMENT -> (holder as CommentViewHolder).bind(uiScope, items[position])
             else ->  throw IllegalArgumentException("Unknown ViewType ${holder.itemViewType}")
         }
     }
