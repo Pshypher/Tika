@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="comment"
+            type="com.example.android.tika.data.presentation.CommentAdapterItem" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:id="@+id/bullet"
+            android:layout_width="@dimen/view_size"
+            android:layout_height="@dimen/view_size"
+            android:background="@drawable/bullet_drawable"
+            app:layout_constraintBottom_toBottomOf="@+id/author_text"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/author_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="4dp"
+            android:paddingTop="8dp"
+            android:fontFamily="@font/barlow_medium"
+            android:gravity="top"
+            android:text="@{comment.author}"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/text_extra_small"
+            app:layout_constraintStart_toEndOf="@+id/bullet"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Temiloluwa" />
+
+        <TextView
+            android:id="@+id/comment_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/view_margin_extra_small"
+            android:layout_marginEnd="@dimen/view_margin_small"
+            android:fontFamily="@font/barlow_condensed_light_italic"
+            android:textColor="@color/dark_gray_color"
+            android:textSize="@dimen/text_small"
+            android:text="@{comment.comment.message}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/author_text"
+            app:layout_constraintTop_toBottomOf="@+id/author_text"
+            tools:text='"Did you close the last comment tag?"' />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

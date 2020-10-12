@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedAttribute">
+    <data>
+        <variable
+            name="task"
+            type="com.example.android.tika.data.presentation.TaskAdapterItem" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="136dp"
+        android:layout_height="68dp"
+        android:layout_marginEnd="@dimen/view_margin_small"
+        android:background="@drawable/task_item_outline"
+        android:elevation="4dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/task_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginStart="@dimen/view_margin_small"
+            android:layout_marginTop="@dimen/view_margin_small"
+            android:layout_marginEnd="@dimen/view_margin"
+            android:layout_marginBottom="@dimen/view_margin"
+            android:ellipsize="end"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="@{task.title}"
+            android:gravity="top"
+            android:maxLines="1"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/regular_text"
+            tools:text="Learn HTML &amp; CSS" />
+
+        <TextView
+            android:id="@+id/date_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginStart="@dimen/view_margin_small"
+            android:fontFamily="@font/barlow_semi_bold"
+            android:text="@{task.date}"
+            android:textColor="@color/dark_gray_color"
+            android:textSize="@dimen/text_small"
+            tools:text="OCT 16" />
+    </LinearLayout>
+</layout>

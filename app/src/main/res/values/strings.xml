@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Tika</string>
+    <string name="activity_panel">Activity Panel</string>
+    <string name="no_progress_hint">Progress Awaits You!</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="progress_ratio">%1$d Complete out of %2$d</string>
+    <string name="num_comments">%1$d Comments</string>
+    <string name="anonymous">anonymous</string>
+    <string name="greeting">Hey Jimi!</string>
+    <string name="set_goal">Set Goal</string>
+    <string name="pledges">Pledges</string>
+    <string name="goals">Goals</string>
+    <string name="settings">Settings</string>
+    <string name="support">Support</string>
+    <string name="logout">Logout</string>
+    <string name="done">Done</string>
+    <string name="add_friends_title">Add Friends</string>
+    <string name="add_friend_btn_label">Add friend</string>
+    <string name="email">Email</string>
+</resources>

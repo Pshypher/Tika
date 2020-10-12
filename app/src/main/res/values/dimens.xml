@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="task_corner_radius">12dp</dimen>
+    <dimen name="view_margin_small">8dp</dimen>
+    <dimen name="view_margin">16dp</dimen>
+    <dimen name="text_small">12sp</dimen>
+    <dimen name="regular_text">14sp</dimen>
+    <dimen name="text_padding">12dp</dimen>
+    <dimen name="view_size">8dp</dimen>
+    <dimen name="text_extra_small">8sp</dimen>
+    <dimen name="text_large">18sp</dimen>
+    <dimen name="text_extra_large">24sp</dimen>
+    <dimen name="view_margin_extra_small">4dp</dimen>
+    <dimen name="form_widget_text">16sp</dimen>
+</resources>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/date_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/day_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/barlow_condensed_medium"
+                android:paddingStart="0dp"
+                android:paddingEnd="@dimen/view_margin_small"
+                android:textColor="@color/dark_gray_color"
+                android:textSize="@dimen/regular_text"
+                tools:text="Today" />
+
+            <TextView
+                android:id="@+id/date_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/barlow_condensed_regular"
+                android:textColor="@color/dark_gray_color"
+                android:textSize="@dimen/regular_text"
+                tools:text="01 . 10 . 20" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/empty_activity_view"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="@dimen/view_margin_small"
+            android:layout_marginBottom="@dimen/view_margin"
+            android:background="@drawable/gray_gutter"
+            android:clickable="false"
+            android:focusable="false"
+            android:fontFamily="@font/barlow_condensed_semi_bold"
+            android:paddingStart="@dimen/view_margin"
+            android:paddingTop="@dimen/text_padding"
+            android:text="@string/no_progress_hint"
+            android:textColor="@color/light_gray_color"
+            android:textSize="@dimen/text_small" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/activity_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/view_margin_small"
+            android:layout_marginBottom="@dimen/view_margin"
+            android:visibility="gone"
+            app:cardCornerRadius="8dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/panel"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0">
+
+                    <TextView
+                        android:id="@+id/ratio_completed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/poppins_medium"
+                        android:textColor="@color/dark_gray_color"
+                        android:textSize="@dimen/regular_text"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="2 Completed out of 4" />
+
+                    <TextView
+                        android:id="@+id/comments_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="4dp"
+                        android:fontFamily="@font/barlow_condensed_medium"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="@dimen/text_small"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/ratio_completed"
+                        app:layout_constraintTop_toBottomOf="@+id/ratio_completed"
+                        tools:text="6 Comments" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/tasks_comments_recycler_view"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/view_margin_small"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/panel"
+                    tools:listitem="@layout/comment_layout" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+</layout>
+
+
+
