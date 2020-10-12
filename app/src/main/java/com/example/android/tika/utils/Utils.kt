@@ -36,7 +36,7 @@ fun flatMapTaskObject(context: Context, tasks: List<Task>): MutableList<Any> {
  */
 fun getAuthor(context: Context, comment: Comment): String {
     val dao = TaskDatabase.getInstance(context.applicationContext).taskDao
-    val comments = dao.getCommentsWithAuthor(comment.commentId)
+    val comments = dao.getCommentsWithAuthor(comment.email)
     val author = comments.colleague
     val name = author.firstName ?: author.lastName
     return name ?: context.getString(R.string.anonymous)

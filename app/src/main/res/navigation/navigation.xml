@@ -7,6 +7,28 @@
     app:startDestination="@id/dashboardFragment">
     <fragment
         android:id="@+id/dashboardFragment"
-        android:name="com.example.android.tika.screens.DashboardFragment"
-        android:label="@string/greeting" />
+        android:name="com.example.android.tika.screens.dashboard.DashboardFragment"
+        android:label="@string/greeting" >
+        <action
+            android:id="@+id/action_dashboardFragment_to_taskFragment"
+            app:destination="@id/taskFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/supportFragment"
+        android:name="com.example.android.tika.screens.support.SupportFragment"
+        android:label="support_fragment"
+        tools:layout="@layout/support_fragment" >
+        <action
+            android:id="@+id/action_supportFragment_to_dashboardFragment"
+            app:destination="@id/dashboardFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/taskFragment"
+        android:name="com.example.android.tika.screens.task.TaskFragment"
+        android:label="task_fragment"
+        tools:layout="@layout/task_fragment" >
+        <action
+            android:id="@+id/action_taskFragment_to_supportFragment"
+            app:destination="@id/supportFragment" />
+    </fragment>
 </navigation>

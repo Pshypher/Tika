@@ -1,6 +1,7 @@
 package com.example.android.tika.data.database
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.util.*
 
@@ -19,7 +20,7 @@ data class Comment (
 
     var taskId: Long,
 
-    var authorId: Long
+    var email: String
 )
 
 @Entity
@@ -39,11 +40,20 @@ data class Task(
     var completed: Boolean = false,
 )
 
-@Entity
+@Entity(primaryKeys = arrayOf("email"))
 data class User(
-    @PrimaryKey(autoGenerate = true) var userId: Long = 0L,
+
+    //@PrimaryKey(autoGenerate = true) var userId: Long = 0L,
+
+    val email: String,
 
     var firstName: String?,
 
     var lastName: String?
+)
+
+@Entity(primaryKeys = ["email", "taskId"])
+data class TaskSupportCrossRef(
+    val email: String,
+    val taskId: Long
 )

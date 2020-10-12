@@ -42,15 +42,18 @@ abstract class TaskDatabase : RoomDatabase() {
                             dao.insertCrossRef(getTaskSupportCrossRef())
                         }
                     }
-                }).build()
+                })
+                .fallbackToDestructiveMigration()
+                .build()
         }
 
         fun getUsers(): List<User> {
             return listOf(
-                User(firstName = "Mika", lastName = "Ghuanzhou"),
-                User(firstName = "Temiloluwa", lastName = "Afolabi"),
-                User(firstName = "Tunji", lastName = "Ojekunle"),
-                User(firstName = "Saadiq", lastName = "Abdullahi")
+                User(email = "mika_g@baidu.com", firstName = "Mika", lastName = "Ghuanzhou"),
+                User(email = "anonymous@tika.tech",  firstName = "Temiloluwa", lastName = "Afolabi"),
+                User(email = "ojekunleadetunji@gmail.com",  firstName = "Tunji", lastName = "Ojekunle"),
+                User(email = "abaraybone@tinariwen.ml", firstName = "Ibrahim", lastName = "Ag-Alhabib"),
+                User(email = "john_doe@gmail.com", firstName = "John", lastName = "Doe")
             )
         }
 
@@ -113,27 +116,34 @@ abstract class TaskDatabase : RoomDatabase() {
 
         fun getComments(): List<Comment> {
             return listOf(
-                Comment(message = "Well Done!", taskId = 2, authorId = 1),
-                Comment(message = "go Jimi go", taskId = 2, authorId = 2),
-                Comment(message = "Did you close the last comment tag?", taskId = 1, authorId = 3),
+                Comment(message = "Well Done!", taskId = 2, email = "mika_g@baidu.com"),
+                Comment(message = "go Jimi go", taskId = 2, email = "anonymous@tika.tech"),
+                Comment(message = "Did you close the last comment tag?", taskId = 1,
+                    email = "ojekunleadetunji@gmail.com"),
                 Comment(
                     message = "I just finished chapter 12 myself, well done",
                     taskId = 4,
-                    authorId = 4
+                    email = "abaraybone@tinariwen.ml"
+                ),
+                Comment(
+                    message = "Get rid of that extra pound",
+                    taskId = 6,
+                    email = "john_doe@gmail.com"
                 )
             )
         }
 
         fun getTaskSupportCrossRef(): List<TaskSupportCrossRef> {
             return listOf(
-                TaskSupportCrossRef(2, 1),
-                TaskSupportCrossRef(3, 1),
-                TaskSupportCrossRef(1, 2),
-                TaskSupportCrossRef(1, 3),
-                TaskSupportCrossRef(2, 3),
-                TaskSupportCrossRef(3, 3),
-                TaskSupportCrossRef(4, 4),
-                TaskSupportCrossRef(1, 5)
+                TaskSupportCrossRef("anonymous@tika.tech", 1),
+                TaskSupportCrossRef("ojekunleadetunji@gmail.com", 1),
+                TaskSupportCrossRef("mika_g@baidu.com", 2),
+                TaskSupportCrossRef("mika_g@baidu.com", 3),
+                TaskSupportCrossRef("anonymous@tika.tech", 3),
+                TaskSupportCrossRef("ojekunleadetunji@gmail.com", 3),
+                TaskSupportCrossRef("abaraybone@tinariwen.ml", 4),
+                TaskSupportCrossRef("mika_g@baidu.com", 5),
+                TaskSupportCrossRef("john_doe@gmail.com", 6)
             )
         }
     }

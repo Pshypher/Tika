@@ -2,9 +2,28 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/aboutFragment"
-        android:title="About" />
+        android:id="@+id/goals_fragment"
+        android:title="@string/goals" />
     <item
-        android:id="@+id/userProfileFragment"
-        android:title="Profile" />
+        android:id="@+id/pledges_fragment"
+        android:title="@string/pledges" />
+    <item
+        android:id="@+id/settings_fragment"
+        android:title="@string/settings" />
+    <item
+        android:id="@+id/support_fragment"
+        android:title="@string/support" />
+    <item
+        android:checkable="false"
+        android:enabled="false"
+        android:title="@null"
+        android:visible="true" />
+    <item
+        android:checkable="false"
+        android:enabled="false"
+        android:title="@null"
+        android:visible="true" />
+    <item
+        android:id="@+id/logout_dialog"
+        android:title="@string/logout"/>
 </menu>

@@ -17,7 +17,7 @@
             android:id="@+id/bullet"
             android:layout_width="@dimen/view_size"
             android:layout_height="@dimen/view_size"
-            android:background="@drawable/bullet"
+            android:background="@drawable/bullet_drawable"
             app:layout_constraintBottom_toBottomOf="@+id/author_text"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -43,7 +43,7 @@
             android:paddingTop="@dimen/view_margin_extra_small"
             android:layout_marginEnd="@dimen/view_margin_small"
             android:fontFamily="@font/barlow_condensed_light_italic"
-            android:textColor="@color/dark_gray_fg_color"
+            android:textColor="@color/dark_gray_color"
             android:textSize="@dimen/text_small"
             android:text="@{comment.comment.message}"
             app:layout_constraintBottom_toBottomOf="parent"

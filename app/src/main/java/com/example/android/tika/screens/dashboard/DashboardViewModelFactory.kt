@@ -1,4 +1,4 @@
-package com.example.android.tika.screens
+package com.example.android.tika.screens.dashboard
 
 import android.app.Application
 import androidx.lifecycle.ViewModel

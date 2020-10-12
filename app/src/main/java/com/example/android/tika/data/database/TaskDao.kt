@@ -36,8 +36,8 @@ interface TaskDao {
     fun getTasks(): List<Task>
 
     @Transaction
-    @Query("SELECT * FROM User WHERE userId = :key")
-    fun getCommentsWithAuthor(key: Long): ColleagueWithComments
+    @Query("SELECT * FROM User WHERE email LIKE :key")
+    fun getCommentsWithAuthor(key: String): ColleagueWithComments
 
     @Transaction
     @Query("SELECT * FROM Task WHERE taskId = :key")

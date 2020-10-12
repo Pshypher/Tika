@@ -2,6 +2,9 @@ package com.example.android.tika
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.TextAppearanceSpan
+import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
@@ -24,6 +27,12 @@ class MainActivity : AppCompatActivity() {
         toolbar = binding.toolbar
         setSupportActionBar(toolbar)
         supportActionBar?.title = null
+
+        val logout: MenuItem = binding.navView.menu.findItem(R.id.logout_dialog)
+        val text: SpannableString = SpannableString(logout.title)
+        text.setSpan(TextAppearanceSpan(this, R.style.LogoutTextAppearance), 0 ,
+            text.length, 0)
+        logout.title = text
 
         val host =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment? ?: return

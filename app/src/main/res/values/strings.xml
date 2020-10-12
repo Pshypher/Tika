@@ -9,4 +9,13 @@
     <string name="anonymous">anonymous</string>
     <string name="greeting">Hey Jimi!</string>
     <string name="set_goal">Set Goal</string>
+    <string name="pledges">Pledges</string>
+    <string name="goals">Goals</string>
+    <string name="settings">Settings</string>
+    <string name="support">Support</string>
+    <string name="logout">Logout</string>
+    <string name="done">Done</string>
+    <string name="add_friends_title">Add Friends</string>
+    <string name="add_friend_btn_label">Add friend</string>
+    <string name="email">Email</string>
 </resources>

@@ -40,8 +40,7 @@
             android:layout_gravity="start"
             android:background="@android:color/white"
             android:fitsSystemWindows="true"
-            app:itemTextAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-            app:itemTextColor="@android:color/black"
+            app:itemTextAppearance="@style/NavigationDrawerTextAppearance"
             app:menu="@menu/navdrawer_menu" />
 
     </androidx.drawerlayout.widget.DrawerLayout>

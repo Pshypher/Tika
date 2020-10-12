@@ -1,4 +1,4 @@
-package com.example.android.tika.screens
+package com.example.android.tika.screens.dashboard
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.android.tika.R
 import com.example.android.tika.adapters.ActivityAdapter
 import com.example.android.tika.adapters.TaskAdapter
-import com.example.android.tika.data.database.TaskDatabase
 
 import com.example.android.tika.databinding.FragmentDashboardBinding
 

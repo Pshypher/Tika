@@ -188,7 +188,7 @@ class ActivityAdapter(private var items: MutableList<ActivityAdapterItem>) :
                 panel.setBackgroundColor(
                     ContextCompat.getColor(
                         context,
-                        R.color.light_gray_bg_color
+                        R.color.light_gray_background
                     )
                 )
                 View.VISIBLE

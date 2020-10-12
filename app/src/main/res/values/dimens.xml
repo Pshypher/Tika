@@ -11,5 +11,5 @@
     <dimen name="text_large">18sp</dimen>
     <dimen name="text_extra_large">24sp</dimen>
     <dimen name="view_margin_extra_small">4dp</dimen>
-    <dimen name="button_text_size">16sp</dimen>
+    <dimen name="form_widget_text">16sp</dimen>
 </resources>
