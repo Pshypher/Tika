@@ -10,8 +10,9 @@ The preferred architecture chosen was MVVM, and Kotlin Coroutines was used to sw
 
 # Other notable features to be incorporated
 -------------------------------------------
-1. Creating a schema for storing data on the cloud using firebase.
-2. Complete the implementation of the Task and Support fragments.
-3. Testing with Junit, Espresso and Mockito.
-4. Using a Dependency Injection library such as Dagger2
-5. Using a SharedPreference file to locally store the users data
+1. Add a repository to conceal remote and local storage.
+2. Create a schema for storing data on the cloud using firebase.
+3. Implement the Task and Support fragments.
+4. Tests with Junit, Espresso and Mockito.
+5. Use a DI library (Dagger2)
+6. Use a SharedPreference file to locally store the users data
