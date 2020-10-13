@@ -30,29 +30,25 @@ class DashboardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        // Inflate the layout for this fragment
+        val binding: FragmentDashboardBinding =
+            DataBindingUtil.inflate(inflater, R.layout.fragment_dashboard, container, false)
+        binding.activityPanel.adapter = activityAdapter
+        binding.taskPanel.adapter = taskAdapter
+
         val application = requireNotNull(this.activity).application
         val viewModelFactory = DashboardViewModelFactory(application)
         val viewModel = ViewModelProvider(this, viewModelFactory).get(DashboardViewModel::class.java)
 
         viewModel.load()
 
-        // Inflate the layout for this fragment
-        val binding: FragmentDashboardBinding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_dashboard, container, false)
-
         viewModel.activities.observe(viewLifecycleOwner, { activities ->
             activityAdapter.swap(activities)
         })
 
-        viewModel.tasks.observe(viewLifecycleOwner, Observer { tasks ->
+        viewModel.tasks.observe(viewLifecycleOwner, { tasks ->
             taskAdapter.swap(tasks)
         })
-
-        val taskPanel = binding.taskPanel
-        val activityPanel = binding.activityPanel
-
-        taskPanel.adapter = taskAdapter
-        activityPanel.adapter = activityAdapter
 
         return binding.root
     }

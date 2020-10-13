@@ -1,5 +1,6 @@
 package com.example.android.tika.data.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao
