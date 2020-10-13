@@ -14,9 +14,6 @@ class DashboardViewModel(val dataSource: TaskDao, application: Application)
     private val viewModelJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
-    private val _owner = MutableLiveData<String>()
-    val owner: LiveData<String>
-        get() = _owner
 
     private val _activitiesWithTasks = MutableLiveData<List<ActivityWithTasks>>()
     val activities = Transformations.map(_activitiesWithTasks) {

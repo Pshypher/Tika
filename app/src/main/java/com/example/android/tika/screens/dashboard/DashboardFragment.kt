@@ -21,10 +21,6 @@ class DashboardFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initialize()
-    }
-
-    private fun initialize() {
         taskAdapter = TaskAdapter(mutableListOf())
         activityAdapter = ActivityAdapter(mutableListOf())
     }
@@ -45,11 +41,11 @@ class DashboardFragment : Fragment() {
             DataBindingUtil.inflate(inflater, R.layout.fragment_dashboard, container, false)
 
         viewModel.activities.observe(viewLifecycleOwner, { activities ->
-            activityAdapter.addAll(activities)
+            activityAdapter.swap(activities)
         })
 
         viewModel.tasks.observe(viewLifecycleOwner, Observer { tasks ->
-            taskAdapter.addAll(tasks)
+            taskAdapter.swap(tasks)
         })
 
         val taskPanel = binding.taskPanel
