@@ -3,11 +3,12 @@ package com.example.android.tika.data.database
 import android.content.Context
 import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteDatabase
+import kotlinx.coroutines.*
 import java.util.*
 
 @Database(
     entities = [Comment::class, Task::class,
-        User::class, TaskSupportCrossRef::class, Activity::class], version = 1, exportSchema = true
+        User::class, TaskSupportCrossRef::class, Activity::class], version = 1, exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class TaskDatabase : RoomDatabase() {
@@ -17,6 +18,9 @@ abstract class TaskDatabase : RoomDatabase() {
 
         @Volatile
         private var INSTANCE: TaskDatabase? = null
+
+        private val job = Job()
+        private val uiScope = CoroutineScope(Dispatchers.Main + job)
 
         fun getInstance(context: Context): TaskDatabase {
             return INSTANCE ?: synchronized(this) {
@@ -33,17 +37,18 @@ abstract class TaskDatabase : RoomDatabase() {
                 .addCallback(object : Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
-                        ioThread {
-                            val dao = getInstance(context).taskDao
-                            dao.insertUsers(getUsers())
-                            dao.insertActivities(getActivities())
-                            dao.insertTasks(getTasks())
-                            dao.insertComments(getComments())
-                            dao.insertCrossRef(getTaskSupportCrossRef())
+                        uiScope.launch {
+                            withContext(Dispatchers.IO) {
+                                val dao = getInstance(context).taskDao
+                                dao.insertUsers(getUsers())
+                                dao.insertActivities(getActivities())
+                                dao.insertTasks(getTasks())
+                                dao.insertComments(getComments())
+                                dao.insertCrossRef(getTaskSupportCrossRef())
+                            }
                         }
                     }
                 })
-                .fallbackToDestructiveMigration()
                 .build()
         }
 
@@ -59,8 +64,8 @@ abstract class TaskDatabase : RoomDatabase() {
 
         fun getActivities(): List<Activity> {
             return listOf(
-                Activity(date = Date(1601593200000)),
-                Activity(date = Date(1601506800000)),
+                Activity(date = Date(1602565339340)),
+                Activity(date = Date(1602457200000)),
                 Activity(date = Date(1601420400000))
             )
         }
@@ -68,14 +73,14 @@ abstract class TaskDatabase : RoomDatabase() {
         fun getTasks(): List<Task> {
             return listOf(
                 Task(
-                    title = "Practice Karate", description = null, startTime = Date(1601451900000),
-                    endTime = Date(1601470500000), completed = false, activityId = 2
+                    title = "Practice Karate", description = null, startTime = Date(1602467130000),
+                    endTime = Date(1602469805000), completed = false, activityId = 2
                 ),
                 Task(
                     title = "Feng-Shui meditation",
                     description = null,
-                    startTime = Date(1601476200000),
-                    endTime = Date(1601485200000),
+                    startTime = Date(1602501325000),
+                    endTime = Date(1602510330000),
                     completed = false,
                     activityId = 2
                 ),
