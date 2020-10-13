@@ -57,10 +57,11 @@ class TaskAdapter(private val tasks: MutableList<TaskAdapterItem>) :
 
     override fun getItemCount(): Int = tasks.size
 
-    fun addAll(tasks: List<TaskAdapterItem>) {
+    fun swap(tasks: List<TaskAdapterItem>) {
         val diffCallBack = TaskDiffCallBack(tasks, this.tasks)
         val diffResult = DiffUtil.calculateDiff(diffCallBack)
 
+        this.tasks.clear()
         this.tasks.addAll(tasks)
 
         // calls the adapter's notify methods after diff is calculated

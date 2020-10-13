@@ -73,10 +73,11 @@ class ActivityAdapter(private var items: MutableList<ActivityAdapterItem>) :
         }
     }
 
-    fun addAll(items: List<ActivityAdapterItem>) {
+    fun swap(items: List<ActivityAdapterItem>) {
         val diffCallBack = ActivityDiffCallBack(items, this.items)
         val diffResult = DiffUtil.calculateDiff(diffCallBack)
 
+        this.items.clear()
         this.items.addAll(items)
 
         // calls the adapter's notify methods after diff is calculated
@@ -125,10 +126,12 @@ class ActivityAdapter(private var items: MutableList<ActivityAdapterItem>) :
          * @param activityWithTasks daily activity of the [User]
          */
         private fun DailyActivityItemBinding.init(pos: Int, total: Int) {
-            dayText.text = when (pos) {
-                0 -> res.getString(R.string.today)
-                1 -> res.getString(R.string.yesterday)
-                else -> { dayText.visibility = View.GONE; null }
+            val millisecondsPerDay =  1000 * 60 * 60 * 24
+            val time = System.currentTimeMillis() - item.date.time
+            dayText.text = when {
+                (time < millisecondsPerDay) -> res.getString(R.string.today)
+                (time < (millisecondsPerDay * 2)) ->  res.getString(R.string.yesterday)
+                else ->  { dayText.visibility = View.GONE; null }
             }
 
             dateText.text = item.formatDate()
