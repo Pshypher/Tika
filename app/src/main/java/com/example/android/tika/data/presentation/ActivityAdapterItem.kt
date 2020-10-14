@@ -1,8 +1,15 @@
 package com.example.android.tika.data.presentation
 
 import android.content.Context
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import com.example.android.tika.data.database.Task
+import com.example.android.tika.data.database.TaskDao
 import com.example.android.tika.data.database.TaskDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.combine
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -43,12 +50,33 @@ fun ActivityAdapterItem.numberOfTasksCompleted(): Int {
  * @param tasks scheduled tasks per day
  * @return number of comments from friends for the daily tasks
  */
-fun ActivityAdapterItem.totalNumberOfComments(context: Context): Int {
+suspend fun ActivityAdapterItem.totalNumberOfComments(context: Context): Int {
     var total = 0
-    val dao = TaskDatabase.getInstance(context.applicationContext).taskDao
-    tasks.forEach {
-        val taskWithComments = dao.getTaskWithComment(it.taskId)
+    val taskDao = TaskDatabase.getInstance(context.applicationContext).taskDao
+    tasks.forEach { task ->
+        val taskWithComments = taskDao.getTaskWithComment(task.taskId)
         total = total.plus(taskWithComments.comments.size)
     }
+
     return total
+//    val result = MediatorLiveData<Int>()
+//    val total = MutableLiveData<Int>()
+//    tasks.forEach {
+//        val operand = Transformations.map(dao.getTaskWithComment(it.taskId)) { taskWithComments ->
+//            taskWithComments.comments.size
+//        }
+//        result.addSource(operand) {
+//            result.value = combine(operand, total)
+//            total.value = result.value
+//        }
+//    }
+//
+//    return result
 }
+
+//fun combine(operand: LiveData<Int>, total: LiveData<Int>): Int {
+//    val op1 = operand.value
+//    val op2 = total.value
+//
+//    return op1?.plus(op2 ?: 0) ?: 0
+//}

@@ -7,13 +7,13 @@ import androidx.room.*
 interface TaskDao {
 
     @Insert
-    fun insertUser(user: User)
+    suspend fun insertUser(user: User)
 
     @Insert
-    fun insertComment(comment: Comment)
+    suspend fun insertComment(comment: Comment)
 
     @Insert
-    fun insertTask(task: Task)
+    suspend fun insertTask(task: Task)
 
     @Insert
     fun insertUsers(users: List<User>)
@@ -31,10 +31,10 @@ interface TaskDao {
     fun insertCrossRef(refs: List<TaskSupportCrossRef>)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun updateTask(task: Task)
+    suspend fun updateTask(task: Task)
 
     @Query("SELECT * FROM Task")
-    fun getTasks(): List<Task>
+    fun getTasks(): LiveData<List<Task>>
 
     @Transaction
     @Query("SELECT * FROM User WHERE email LIKE :key")
@@ -46,13 +46,13 @@ interface TaskDao {
 
     @Transaction
     @Query("SELECT * FROM User")
-    fun getColleagueWithTasks(): List<ColleagueWithTasks>
+    fun getColleagueWithTasks(): LiveData<List<ColleagueWithTasks>>
 
     @Transaction
     @Query("SELECT * FROM Task")
-    fun getTaskWithSupport(): List<TaskWithSupport>
+    fun getTaskWithSupport(): LiveData<List<TaskWithSupport>>
 
     @Transaction
     @Query("SELECT * FROM Activity")
-    fun getActivities(): List<ActivityWithTasks>
+    fun getActivities(): LiveData<List<ActivityWithTasks>>
 }

@@ -19,9 +19,6 @@ abstract class TaskDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: TaskDatabase? = null
 
-        private val job = Job()
-        private val uiScope = CoroutineScope(Dispatchers.Main + job)
-
         fun getInstance(context: Context): TaskDatabase {
             return INSTANCE ?: synchronized(this) {
                 INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
@@ -35,16 +32,14 @@ abstract class TaskDatabase : RoomDatabase() {
                 "task_database"
             )
                 .addCallback(object : Callback() {
+
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
-                        uiScope.launch {
-                            withContext(Dispatchers.IO) {
-                                val dao = getInstance(context).taskDao
-                                dao.insertUsers(getUsers())
-                                dao.insertActivities(getActivities())
-                                dao.insertTasks(getTasks())
-                                dao.insertComments(getComments())
-                                dao.insertCrossRef(getTaskSupportCrossRef())
+                        INSTANCE?.let { database ->
+                            ioThread {
+                                val taskDao = database.taskDao
+                                // Add sample data
+                                add(taskDao)
                             }
                         }
                     }
@@ -150,6 +145,14 @@ abstract class TaskDatabase : RoomDatabase() {
                 TaskSupportCrossRef("mika_g@baidu.com", 5),
                 TaskSupportCrossRef("john_doe@gmail.com", 6)
             )
+        }
+
+        fun add(taskDao: TaskDao) {
+            taskDao.insertUsers(getUsers())
+            taskDao.insertActivities(getActivities())
+            taskDao.insertTasks(getTasks())
+            taskDao.insertComments(getComments())
+            taskDao.insertCrossRef(getTaskSupportCrossRef())
         }
     }
 }

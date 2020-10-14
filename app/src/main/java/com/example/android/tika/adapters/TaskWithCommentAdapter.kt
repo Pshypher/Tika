@@ -4,6 +4,9 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.tika.data.database.Comment
@@ -13,6 +16,7 @@ import com.example.android.tika.databinding.TaskTitleItemBinding
 import com.example.android.tika.utils.getAuthor
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
+import kotlin.properties.Delegates
 
 class TaskWithCommentAdapter(private val items: MutableList<Any>)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -34,22 +38,20 @@ class TaskWithCommentAdapter(private val items: MutableList<Any>)
         notifyDataSetChanged()
     }
 
-    class ActivityDetailDiffCallBack(private val newItems: List<Any>, private val oldItems: List<Any>)
-        : DiffUtil.Callback() {
-        override fun getOldListSize(): Int = oldItems.size
-
-        override fun getNewListSize(): Int = newItems.size
-
+    class TaskCommentDiffCallBack(val oldItems: List<Any>, val newItems: List<Any>) :
+        DiffUtil.Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val old = oldItems[oldItemPosition]
             val new = newItems[newItemPosition]
             return old::class.simpleName == new::class.simpleName && old == new
         }
 
+        override fun getOldListSize(): Int = oldItems.size
+
+        override fun getNewListSize(): Int = newItems.size
+
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            val old = oldItems[oldItemPosition]
-            val new = newItems[newItemPosition]
-            return old == new
+            return areItemsTheSame(oldItemPosition, newItemPosition)
         }
     }
 
@@ -74,7 +76,7 @@ class TaskWithCommentAdapter(private val items: MutableList<Any>)
 
     class CommentViewHolder(private val itemBinding: CommentLayoutBinding) :
             RecyclerView.ViewHolder(itemBinding.root) {
-        fun bind(scope: CoroutineScope, item: Any) {
+        fun bind(item: Any, scope: CoroutineScope) {
             scope.launch {
                 val entity = item as Comment
                 val comment = CommentAdapterItem(entity, null)
@@ -84,8 +86,8 @@ class TaskWithCommentAdapter(private val items: MutableList<Any>)
         }
 
         suspend fun author(entity: Comment): String {
+            val context = itemBinding.root.context
             return withContext(Dispatchers.IO) {
-                val context = itemBinding.root.context
                 getAuthor(context, entity)
             }
         }
@@ -103,7 +105,7 @@ class TaskWithCommentAdapter(private val items: MutableList<Any>)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
             TITLE -> (holder as TitleViewHolder).bind(items[position])
-            COMMENT -> (holder as CommentViewHolder).bind(uiScope, items[position])
+            COMMENT -> (holder as CommentViewHolder).bind(items[position], uiScope)
             else ->  throw IllegalArgumentException("Unknown ViewType ${holder.itemViewType}")
         }
     }
@@ -114,13 +116,17 @@ class TaskWithCommentAdapter(private val items: MutableList<Any>)
         return if (items[position] is String) TITLE else COMMENT
     }
 
-    fun addAll(items: List<Any>) {
-        val diffCallBack = ActivityDetailDiffCallBack(items, this.items)
+    fun swap(items: MutableList<Any>) {
+        // compute diffs
+        val diffCallBack = TaskCommentDiffCallBack(items, this.items)
         val diffResult = DiffUtil.calculateDiff(diffCallBack)
 
+        // clear task & comments
+        this.items.clear()
         this.items.addAll(items)
 
-        // calls the adapter's notify methods after diff is calculated
         diffResult.dispatchUpdatesTo(this)
+
+
     }
 }
