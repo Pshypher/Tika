@@ -39,7 +39,7 @@ class ActivityAdapter(private var items: MutableList<ActivityAdapterItem>) :
         val inflater: LayoutInflater = LayoutInflater.from(parent.context)
         val itemBinding: DailyActivityItemBinding =
             DailyActivityItemBinding.inflate(inflater, parent, false)
-//        itemBinding.lifecycleOwner = lifecycleOwner
+
         return ActivityViewHolder(itemBinding, pool, uiScope)
     }
 
@@ -155,16 +155,6 @@ class ActivityAdapter(private var items: MutableList<ActivityAdapterItem>) :
                 commentsText.text = res.getString(R.string.num_comments, count)
             }
 
-            /*lifecycleOwner?.let {
-                item.totalNumberOfComments(context).observe(it, Observer { comments ->
-                    if (item.tasks.isNotEmpty() && count > 0) {
-                        emptyActivityView.visibility = View.GONE; activityView.visibility = View.VISIBLE
-                        ratioCompleted.text =
-                            res.getString(R.string.progress_ratio,  item.numberOfTasksCompleted(), item.tasks.size)
-                        commentsText.text = res.getString(R.string.num_comments, count)
-                    }
-                })
-            }*/
         }
 
         /**
