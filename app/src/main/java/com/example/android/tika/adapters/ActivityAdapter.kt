@@ -30,7 +30,6 @@ class ActivityAdapter(private var items: MutableList<ActivityAdapterItem>) :
     private val job = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
 
-
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
         job.cancel()
@@ -40,12 +39,13 @@ class ActivityAdapter(private var items: MutableList<ActivityAdapterItem>) :
         val inflater: LayoutInflater = LayoutInflater.from(parent.context)
         val itemBinding: DailyActivityItemBinding =
             DailyActivityItemBinding.inflate(inflater, parent, false)
-        return ActivityViewHolder(itemBinding, pool)
+//        itemBinding.lifecycleOwner = lifecycleOwner
+        return ActivityViewHolder(itemBinding, pool, uiScope)
     }
 
     override fun onBindViewHolder(holder: ActivityViewHolder, position: Int) {
         val item: ActivityAdapterItem = items[position]
-        holder.bind(item, uiScope)
+        holder.bind(item)
         holder.setNotifyItemChangedListener(this)
     }
 
@@ -90,7 +90,8 @@ class ActivityAdapter(private var items: MutableList<ActivityAdapterItem>) :
 
     class ActivityViewHolder(
         private val binding: DailyActivityItemBinding,
-        private val pool: RecyclerView.RecycledViewPool
+        private val pool: RecyclerView.RecycledViewPool,
+        private val scope: CoroutineScope
     ) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
 
         private val context = binding.root.context
@@ -106,79 +107,93 @@ class ActivityAdapter(private var items: MutableList<ActivityAdapterItem>) :
             this.listener = listener
         }
 
-        fun bind(item: ActivityAdapterItem, scope: CoroutineScope) {
+        fun bind(item: ActivityAdapterItem) {
             this.item = item
-            scope.launch {
-                val total = numberOfComments()
-                binding.apply {
-                    init(adapterPosition, total)
-                    setupNestedRecyclerView(scope, total)
+
+            binding.apply {
+                scope.launch {
+                    val count = numberOfComments()
+                    init(count)
+                    setupNestedRecyclerView(count)
                     reconfigure()
                     executePendingBindings()
                 }
             }
         }
 
+        suspend fun DailyActivityItemBinding.numberOfComments(): Int {
+            return withContext(Dispatchers.IO) {
+                item.totalNumberOfComments(root.context)
+            }
+        }
+
         /**
          * Sets up the date, progress and total number of comments per [Activity]
          * per day
-         * @param pos the position of the item within this Adapter
-         * @param activityWithTasks daily activity of the [User]
          */
-        private fun DailyActivityItemBinding.init(pos: Int, total: Int) {
-            val millisecondsPerDay =  1000 * 60 * 60 * 24
+        private fun DailyActivityItemBinding.init(count: Int) {
+            val millisecondsPerDay = 1000 * 60 * 60 * 24
             val time = System.currentTimeMillis() - item.date.time
             dayText.text = when {
                 (time < millisecondsPerDay) -> res.getString(R.string.today)
-                (time < (millisecondsPerDay * 2)) ->  res.getString(R.string.yesterday)
-                else ->  { dayText.visibility = View.GONE; null }
+                (time < (millisecondsPerDay * 2)) -> res.getString(R.string.yesterday)
+                else -> {
+                    dayText.visibility = View.GONE; null
+                }
             }
 
             dateText.text = item.formatDate()
 
-            if (item.tasks.isNotEmpty() && total > 0) {
+            if (item.tasks.isNotEmpty() && count > 0) {
                 emptyActivityView.visibility = View.GONE; activityView.visibility = View.VISIBLE
                 ratioCompleted.text =
                     res.getString(
                         R.string.progress_ratio,
                         item.numberOfTasksCompleted(),
-                        item.tasks.size)
-                commentsText.text =
-                    res.getString(R.string.num_comments, total)
+                        item.tasks.size
+                    )
+                commentsText.text = res.getString(R.string.num_comments, count)
             }
 
-        }
-
-        private suspend fun numberOfComments(): Int {
-            return withContext(Dispatchers.IO) {
-                item.totalNumberOfComments(context)
-            }
+            /*lifecycleOwner?.let {
+                item.totalNumberOfComments(context).observe(it, Observer { comments ->
+                    if (item.tasks.isNotEmpty() && count > 0) {
+                        emptyActivityView.visibility = View.GONE; activityView.visibility = View.VISIBLE
+                        ratioCompleted.text =
+                            res.getString(R.string.progress_ratio,  item.numberOfTasksCompleted(), item.tasks.size)
+                        commentsText.text = res.getString(R.string.num_comments, count)
+                    }
+                })
+            }*/
         }
 
         /**
          * Creates the nested recycler view for the list of [Task] nested within an [Activity]
-         * @param activityWithTasks list of [Task] scheduled per day by the User
+         * @param count the number of comments within a [Task]
          */
-        private fun DailyActivityItemBinding.setupNestedRecyclerView(scope: CoroutineScope, total: Int) {
+        private fun DailyActivityItemBinding.setupNestedRecyclerView(count: Int) {
+            val layoutManager = LinearLayoutManager(
+                tasksCommentsRecyclerView.context,
+                LinearLayoutManager.VERTICAL, false
+            )
+            layoutManager.initialPrefetchItemCount = count + item.tasks.size
+
+            val adapter = TaskWithCommentAdapter(mutableListOf())
+            tasksCommentsRecyclerView.adapter = adapter
+            tasksCommentsRecyclerView.layoutManager = layoutManager
+            tasksCommentsRecyclerView.setRecycledViewPool(pool)
+
+            // Create sub-item view adapter
             scope.launch {
-                val layoutManager = LinearLayoutManager(
-                    tasksCommentsRecyclerView.context,
-                    LinearLayoutManager.VERTICAL, false
-                )
-                layoutManager.initialPrefetchItemCount = total + item.tasks.size
-
-                // Create sub-item view adapter
-                val adapter = TaskWithCommentAdapter(flatMap())
-
-                tasksCommentsRecyclerView.adapter = adapter
-                tasksCommentsRecyclerView.layoutManager = layoutManager
-                tasksCommentsRecyclerView.setRecycledViewPool(pool)
+                val result = flatMap()
+                adapter.swap(result)
             }
         }
 
-        private suspend fun flatMap(): MutableList<Any> {
+        suspend fun flatMap(): MutableList<Any> {
             return withContext(Dispatchers.IO) {
                 flatMapTaskObject(context, item.tasks)
+
             }
         }
 

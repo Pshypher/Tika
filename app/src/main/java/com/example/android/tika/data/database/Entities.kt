@@ -37,7 +37,7 @@ data class Task(
 
     var activityId: Long?,
 
-    var completed: Boolean = false,
+    var completed: Boolean = false
 )
 
 @Entity(primaryKeys = arrayOf("email"))

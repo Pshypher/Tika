@@ -6,57 +6,58 @@ import com.example.android.tika.data.database.*
 import com.example.android.tika.data.presentation.ActivityAdapterItem
 import com.example.android.tika.data.presentation.TaskAdapterItem
 import com.example.android.tika.data.presentation.formatDate
-import kotlinx.coroutines.*
 
-class DashboardViewModel(val dataSource: TaskDao, application: Application)
+
+class DashboardViewModel(application: Application)
     : AndroidViewModel(application) {
 
-    private val viewModelJob = Job()
-    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
+    private val dataSource = TaskDatabase.getInstance(application).taskDao
 
-
-    private val _activitiesWithTasks = MutableLiveData<List<ActivityWithTasks>>()
-    val activities = Transformations.map(_activitiesWithTasks) {
-        val items: MutableList<ActivityAdapterItem> = mutableListOf()
-        it.forEach {
-            items.add(ActivityAdapterItem(it.activity.activityId, it.activity.date, it.tasks))
-        }
-        items
-    }
-
-
-    private val _tasks = MutableLiveData<List<Task>>()
-    val tasks: LiveData<List<TaskAdapterItem>> = Transformations.map(_tasks) {
-        val items: MutableList<TaskAdapterItem> = mutableListOf()
-        it.forEach {
-            items.add(TaskAdapterItem(it.taskId, it.title).apply {
-                formatDate(it.startTime.time)
-            })
-        }
-        items
-    }
-
-    fun load() {
-        uiScope.launch {
-            _tasks.value = getTasks()
-            _activitiesWithTasks.value = getActivities()
+    fun getActivities(): LiveData<List<ActivityAdapterItem>> {
+        return Transformations.map(dataSource.getActivities()) { activities ->
+            val items: MutableList<ActivityAdapterItem> = mutableListOf()
+            activities.forEach {
+                items.add(ActivityAdapterItem(it.activity.activityId, it.activity.date, it.tasks, false))
+            }
+            items
         }
     }
 
-    suspend fun getTasks(): List<Task> {
-        return withContext(Dispatchers.IO) {
-            dataSource.getTasks()
+    fun getTasks(): LiveData<List<TaskAdapterItem>> {
+        return Transformations.map(dataSource.getTasks()) { tasks ->
+            val items: MutableList<TaskAdapterItem> = mutableListOf()
+            tasks.forEach {
+                items.add(TaskAdapterItem(it.taskId, it.title).apply {
+                    formatDate(it.startTime.time)
+                })
+            }
+            items
         }
+
     }
 
-    suspend fun getActivities(): List<ActivityWithTasks> {
-        return withContext(Dispatchers.IO) {
-            dataSource.getActivities()
-        }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        viewModelJob.cancel()
-    }
+//    init {
+        // fetch()
+//        viewModelScope.launch {
+//            _tasks.value = dataSource.getTasks()
+//            val tasks = Transformations.map(_tasks) {
+//                val items = mutableListOf<TaskAdapterItem>()
+//                it.forEach { task ->
+//                    items.add(TaskAdapterItem(task.taskId, task.title).apply {
+//                        formatDate(task.startTime.time)
+//                    })
+//                }
+//                items
+//            }
+//            _activitiesWithTasks.value = dataSource.getActivities()
+//            activities = Transformations.map(_activitiesWithTasks) {
+//                val items: MutableList<ActivityAdapterItem> = mutableListOf()
+//
+//                it?.forEach {
+//                    items.add(ActivityAdapterItem(it.activity.activityId, it.activity.date, it.tasks))
+//                }
+//                items
+//            }
+//        }
+ //   }
 }

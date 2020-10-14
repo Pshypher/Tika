@@ -1,6 +1,7 @@
 package com.example.android.tika.screens.dashboard
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,19 +12,13 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.android.tika.R
 import com.example.android.tika.adapters.ActivityAdapter
 import com.example.android.tika.adapters.TaskAdapter
+import com.example.android.tika.data.database.ActivityWithTasks
 
 import com.example.android.tika.databinding.FragmentDashboardBinding
 
 class DashboardFragment : Fragment() {
 
-    private lateinit var taskAdapter: TaskAdapter
-    private lateinit var activityAdapter: ActivityAdapter
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        taskAdapter = TaskAdapter(mutableListOf())
-        activityAdapter = ActivityAdapter(mutableListOf())
-    }
+    private val TAG = "DashboardFragment"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,20 +28,23 @@ class DashboardFragment : Fragment() {
         // Inflate the layout for this fragment
         val binding: FragmentDashboardBinding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_dashboard, container, false)
+
+        val activityAdapter = ActivityAdapter(mutableListOf())
         binding.activityPanel.adapter = activityAdapter
+        val taskAdapter = TaskAdapter(mutableListOf())
         binding.taskPanel.adapter = taskAdapter
 
         val application = requireNotNull(this.activity).application
         val viewModelFactory = DashboardViewModelFactory(application)
         val viewModel = ViewModelProvider(this, viewModelFactory).get(DashboardViewModel::class.java)
 
-        viewModel.load()
-
-        viewModel.activities.observe(viewLifecycleOwner, { activities ->
+        viewModel.getActivities().observe(viewLifecycleOwner, Observer { activities ->
+            Log.d(TAG, activities.toString())
             activityAdapter.swap(activities)
         })
 
-        viewModel.tasks.observe(viewLifecycleOwner, { tasks ->
+        viewModel.getTasks().observe(viewLifecycleOwner, Observer { tasks ->
+            Log.d(TAG, tasks.toString())
             taskAdapter.swap(tasks)
         })
 

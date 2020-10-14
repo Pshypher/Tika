@@ -19,7 +19,7 @@ class TaskAdapter(private val tasks: MutableList<TaskAdapterItem>) :
     class TaskDiffCallBack(private val newItems: List<TaskAdapterItem>,
                            private val oldItems: List<TaskAdapterItem>) :
         DiffUtil.Callback() {
-        override fun getOldListSize(): Int = oldItems.size ?: 0
+        override fun getOldListSize(): Int = oldItems.size
 
         override fun getNewListSize(): Int = newItems.size
 
