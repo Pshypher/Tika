@@ -6,7 +6,7 @@
     <data>
         <variable
             name="comment"
-            type="com.example.android.tika.data.presentation.CommentAdapterItem" />
+            type="com.example.android.tika.data.presentation.CommentItem" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

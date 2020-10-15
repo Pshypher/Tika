@@ -5,7 +5,7 @@
     <data>
         <variable
             name="task"
-            type="com.example.android.tika.data.presentation.TaskAdapterItem" />
+            type="com.example.android.tika.data.presentation.TaskItem" />
     </data>
 
     <LinearLayout

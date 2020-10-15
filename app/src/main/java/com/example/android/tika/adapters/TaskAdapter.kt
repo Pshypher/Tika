@@ -6,18 +6,25 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.tika.R
-import com.example.android.tika.data.presentation.TaskAdapterItem
+import com.example.android.tika.data.presentation.TaskItem
 import com.example.android.tika.databinding.TaskItemBinding
 
-class TaskAdapter(private val tasks: MutableList<TaskAdapterItem>) :
+class TaskAdapter() :
     RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
-    init {
-        notifyDataSetChanged()
-    }
+    var tasks = listOf<TaskItem>()
+        set(value) {
+            val diffCallBack = TaskDiffCallBack(value, tasks)
+            val diffResult = DiffUtil.calculateDiff(diffCallBack)
 
-    class TaskDiffCallBack(private val newItems: List<TaskAdapterItem>,
-                           private val oldItems: List<TaskAdapterItem>) :
+            field = value
+
+            // calls the adapter's notify methods after diff is calculated
+            diffResult.dispatchUpdatesTo(this)
+        }
+
+    class TaskDiffCallBack(private val newItems: List<TaskItem>,
+                           private val oldItems: List<TaskItem>) :
         DiffUtil.Callback() {
         override fun getOldListSize(): Int = oldItems.size
 
@@ -39,7 +46,7 @@ class TaskAdapter(private val tasks: MutableList<TaskAdapterItem>) :
     class TaskViewHolder(private val binding: TaskItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: TaskAdapterItem) {
+        fun bind(item: TaskItem) {
             binding.task = item
             binding.executePendingBindings()
         }
@@ -56,15 +63,4 @@ class TaskAdapter(private val tasks: MutableList<TaskAdapterItem>) :
         holder.bind(tasks[position])
 
     override fun getItemCount(): Int = tasks.size
-
-    fun swap(tasks: List<TaskAdapterItem>) {
-        val diffCallBack = TaskDiffCallBack(tasks, this.tasks)
-        val diffResult = DiffUtil.calculateDiff(diffCallBack)
-
-        this.tasks.clear()
-        this.tasks.addAll(tasks)
-
-        // calls the adapter's notify methods after diff is calculated
-        diffResult.dispatchUpdatesTo(this)
-    }
 }

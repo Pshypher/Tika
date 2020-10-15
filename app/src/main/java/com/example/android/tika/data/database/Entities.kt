@@ -43,8 +43,6 @@ data class Task(
 @Entity(primaryKeys = arrayOf("email"))
 data class User(
 
-    //@PrimaryKey(autoGenerate = true) var userId: Long = 0L,
-
     val email: String,
 
     var firstName: String?,
