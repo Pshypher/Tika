@@ -10,10 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.android.tika.R
 import com.example.android.tika.data.database.Activity
 import com.example.android.tika.data.database.Task
-import com.example.android.tika.data.presentation.ActivityAdapterItem
-import com.example.android.tika.data.presentation.formatDate
-import com.example.android.tika.data.presentation.numberOfTasksCompleted
-import com.example.android.tika.data.presentation.totalNumberOfComments
+import com.example.android.tika.data.presentation.*
 
 import com.example.android.tika.databinding.DailyActivityItemBinding
 import com.example.android.tika.utils.flatMapTaskObject
@@ -23,28 +20,35 @@ interface NotifyItemChangedListener {
     fun notifyViewToggle(position: Int)
 }
 
-class ActivityAdapter(private var items: MutableList<ActivityAdapterItem>) :
+class ActivityAdapter() :
     RecyclerView.Adapter<ActivityAdapter.ActivityViewHolder>(), NotifyItemChangedListener {
 
     private var pool: RecyclerView.RecycledViewPool = RecyclerView.RecycledViewPool()
-    private val job = Job()
-    private val uiScope = CoroutineScope(Dispatchers.Main + job)
+    var scope: CoroutineScope = CoroutineScope(Dispatchers.Default)
+        set(value) {
+            field = value
+        }
 
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
-        super.onDetachedFromRecyclerView(recyclerView)
-        job.cancel()
-    }
+    var items = listOf<ActivityItem>()
+        set(value) {
+            val diffCallBack = ActivityDiffCallBack(value, items)
+            val diffResult = DiffUtil.calculateDiff(diffCallBack)
+            field = value
+
+            // calls the adapter's notify methods after diff is calculated
+            diffResult.dispatchUpdatesTo(this)
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ActivityViewHolder {
         val inflater: LayoutInflater = LayoutInflater.from(parent.context)
         val itemBinding: DailyActivityItemBinding =
             DailyActivityItemBinding.inflate(inflater, parent, false)
 
-        return ActivityViewHolder(itemBinding, pool, uiScope)
+        return ActivityViewHolder(itemBinding, pool, scope)
     }
 
     override fun onBindViewHolder(holder: ActivityViewHolder, position: Int) {
-        val item: ActivityAdapterItem = items[position]
+        val item: ActivityItem = items[position]
         holder.bind(item)
         holder.setNotifyItemChangedListener(this)
     }
@@ -52,8 +56,8 @@ class ActivityAdapter(private var items: MutableList<ActivityAdapterItem>) :
     override fun getItemCount(): Int = items.size
 
     class ActivityDiffCallBack(
-        private val newItems: List<ActivityAdapterItem>,
-        private val oldItems: MutableList<ActivityAdapterItem>
+        private val newItems: List<ActivityItem>,
+        private val oldItems: List<ActivityItem>
     ) : DiffUtil.Callback() {
 
         override fun getOldListSize(): Int = oldItems.size
@@ -73,17 +77,6 @@ class ActivityAdapter(private var items: MutableList<ActivityAdapterItem>) :
         }
     }
 
-    fun swap(items: List<ActivityAdapterItem>) {
-        val diffCallBack = ActivityDiffCallBack(items, this.items)
-        val diffResult = DiffUtil.calculateDiff(diffCallBack)
-
-        this.items.clear()
-        this.items.addAll(items)
-
-        // calls the adapter's notify methods after diff is calculated
-        diffResult.dispatchUpdatesTo(this)
-    }
-
     override fun notifyViewToggle(position: Int) {
         notifyItemChanged(position)
     }
@@ -96,7 +89,7 @@ class ActivityAdapter(private var items: MutableList<ActivityAdapterItem>) :
 
         private val context = binding.root.context
         private val res = context.resources
-        private lateinit var item: ActivityAdapterItem
+        private lateinit var item: ActivityItem
         private lateinit var listener: NotifyItemChangedListener
 
         init {
@@ -107,7 +100,7 @@ class ActivityAdapter(private var items: MutableList<ActivityAdapterItem>) :
             this.listener = listener
         }
 
-        fun bind(item: ActivityAdapterItem) {
+        fun bind(item: ActivityItem) {
             this.item = item
 
             binding.apply {
@@ -168,7 +161,7 @@ class ActivityAdapter(private var items: MutableList<ActivityAdapterItem>) :
             )
             layoutManager.initialPrefetchItemCount = count + item.tasks.size
 
-            val adapter = TaskWithCommentAdapter(mutableListOf())
+            val adapter = TaskWithCommentAdapter(scope)
             tasksCommentsRecyclerView.adapter = adapter
             tasksCommentsRecyclerView.layoutManager = layoutManager
             tasksCommentsRecyclerView.setRecycledViewPool(pool)
@@ -176,7 +169,7 @@ class ActivityAdapter(private var items: MutableList<ActivityAdapterItem>) :
             // Create sub-item view adapter
             scope.launch {
                 val result = flatMap()
-                adapter.swap(result)
+                adapter.items = result
             }
         }
 

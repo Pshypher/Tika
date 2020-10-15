@@ -4,21 +4,17 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.tika.data.database.Comment
-import com.example.android.tika.data.presentation.CommentAdapterItem
+import com.example.android.tika.data.presentation.CommentItem
 import com.example.android.tika.databinding.CommentLayoutBinding
 import com.example.android.tika.databinding.TaskTitleItemBinding
 import com.example.android.tika.utils.getAuthor
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
-import kotlin.properties.Delegates
 
-class TaskWithCommentAdapter(private val items: MutableList<Any>)
+class TaskWithCommentAdapter(val scope: CoroutineScope)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -26,17 +22,15 @@ class TaskWithCommentAdapter(private val items: MutableList<Any>)
         const val COMMENT = 1
     }
 
-    private val job = Job()
-    private val uiScope = CoroutineScope(Dispatchers.Main + job)
+    var items = listOf<Any>()
+        set(value) {
+            val diffCallBack = TaskCommentDiffCallBack(items, value)
+            val diffResult = DiffUtil.calculateDiff(diffCallBack)
 
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
-        super.onDetachedFromRecyclerView(recyclerView)
-        job.cancel()
-    }
+            field = value
 
-    init {
-        notifyDataSetChanged()
-    }
+            diffResult.dispatchUpdatesTo(this)
+        }
 
     class TaskCommentDiffCallBack(val oldItems: List<Any>, val newItems: List<Any>) :
         DiffUtil.Callback() {
@@ -79,7 +73,7 @@ class TaskWithCommentAdapter(private val items: MutableList<Any>)
         fun bind(item: Any, scope: CoroutineScope) {
             scope.launch {
                 val entity = item as Comment
-                val comment = CommentAdapterItem(entity, null)
+                val comment = CommentItem(entity, null)
                 comment.author = author(entity)
                 itemBinding.comment = comment
             }
@@ -105,7 +99,7 @@ class TaskWithCommentAdapter(private val items: MutableList<Any>)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
             TITLE -> (holder as TitleViewHolder).bind(items[position])
-            COMMENT -> (holder as CommentViewHolder).bind(items[position], uiScope)
+            COMMENT -> (holder as CommentViewHolder).bind(items[position], scope)
             else ->  throw IllegalArgumentException("Unknown ViewType ${holder.itemViewType}")
         }
     }
@@ -114,19 +108,5 @@ class TaskWithCommentAdapter(private val items: MutableList<Any>)
 
     override fun getItemViewType(position: Int): Int {
         return if (items[position] is String) TITLE else COMMENT
-    }
-
-    fun swap(items: MutableList<Any>) {
-        // compute diffs
-        val diffCallBack = TaskCommentDiffCallBack(items, this.items)
-        val diffResult = DiffUtil.calculateDiff(diffCallBack)
-
-        // clear task & comments
-        this.items.clear()
-        this.items.addAll(items)
-
-        diffResult.dispatchUpdatesTo(this)
-
-
     }
 }

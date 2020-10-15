@@ -18,8 +18,6 @@ import com.example.android.tika.databinding.FragmentDashboardBinding
 
 class DashboardFragment : Fragment() {
 
-    private val TAG = "DashboardFragment"
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -29,23 +27,27 @@ class DashboardFragment : Fragment() {
         val binding: FragmentDashboardBinding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_dashboard, container, false)
 
-        val activityAdapter = ActivityAdapter(mutableListOf())
-        binding.activityPanel.adapter = activityAdapter
-        val taskAdapter = TaskAdapter(mutableListOf())
-        binding.taskPanel.adapter = taskAdapter
-
         val application = requireNotNull(this.activity).application
         val viewModelFactory = DashboardViewModelFactory(application)
         val viewModel = ViewModelProvider(this, viewModelFactory).get(DashboardViewModel::class.java)
 
+        val activityAdapter = ActivityAdapter()
+        binding.activityPanel.adapter = activityAdapter
+
+        val taskAdapter = TaskAdapter()
+        binding.taskPanel.adapter = taskAdapter
+
+        activityAdapter.scope = viewModel.getCoroutineScope()
         viewModel.getActivities().observe(viewLifecycleOwner, Observer { activities ->
-            Log.d(TAG, activities.toString())
-            activityAdapter.swap(activities)
+            activities?.let {
+                activityAdapter.items = it
+            }
         })
 
         viewModel.getTasks().observe(viewLifecycleOwner, Observer { tasks ->
-            Log.d(TAG, tasks.toString())
-            taskAdapter.swap(tasks)
+            tasks?.let {
+                taskAdapter.tasks = it
+            }
         })
 
         return binding.root
