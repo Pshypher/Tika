@@ -46,7 +46,7 @@ class DashboardFragment : Fragment() {
 
         viewModel.getTasks().observe(viewLifecycleOwner, Observer { tasks ->
             tasks?.let {
-                taskAdapter.tasks = it
+                taskAdapter.submitList(it)
             }
         })
 
