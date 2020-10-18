@@ -24,7 +24,7 @@ class ActivityAdapter() :
     RecyclerView.Adapter<ActivityAdapter.ActivityViewHolder>(), NotifyItemChangedListener {
 
     private var pool: RecyclerView.RecycledViewPool = RecyclerView.RecycledViewPool()
-    var scope: CoroutineScope = CoroutineScope(Dispatchers.Default)
+    var scope: CoroutineScope? = null
         set(value) {
             field = value
         }
@@ -84,7 +84,7 @@ class ActivityAdapter() :
     class ActivityViewHolder(
         private val binding: DailyActivityItemBinding,
         private val pool: RecyclerView.RecycledViewPool,
-        private val scope: CoroutineScope
+        private val scope: CoroutineScope?
     ) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
 
         private val context = binding.root.context
@@ -104,7 +104,7 @@ class ActivityAdapter() :
             this.item = item
 
             binding.apply {
-                scope.launch {
+                scope?.launch {
                     val count = numberOfComments()
                     init(count)
                     setupNestedRecyclerView(count)
@@ -167,9 +167,9 @@ class ActivityAdapter() :
             tasksCommentsRecyclerView.setRecycledViewPool(pool)
 
             // Create sub-item view adapter
-            scope.launch {
+            scope?.launch {
                 val result = flatMap()
-                adapter.items = result
+                adapter.submitList(result)
             }
         }
 

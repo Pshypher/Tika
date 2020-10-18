@@ -1,8 +1,7 @@
 package com.example.android.tika.data.presentation
 
-import com.example.android.tika.data.database.Comment
-
 data class CommentItem(
-    val comment: Comment,
+    val commentId: Long,
+    val message: String,
     var author: String?
 )
