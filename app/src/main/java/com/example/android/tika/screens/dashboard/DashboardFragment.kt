@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.example.android.tika.R
 import com.example.android.tika.adapters.ActivityAdapter
 import com.example.android.tika.adapters.TaskAdapter
@@ -34,19 +35,23 @@ class DashboardFragment : Fragment() {
         val activityAdapter = ActivityAdapter()
         binding.activityPanel.adapter = activityAdapter
 
+        // Removes blinks
+        val animator = binding.activityPanel.itemAnimator as SimpleItemAnimator
+        animator.supportsChangeAnimations = false
+
         val taskAdapter = TaskAdapter()
         binding.taskPanel.adapter = taskAdapter
 
         activityAdapter.scope = viewModel.getCoroutineScope()
         viewModel.getActivities().observe(viewLifecycleOwner, Observer { activities ->
             activities?.let {
-                activityAdapter.items = it
+                activityAdapter.submitList(it)
             }
         })
 
         viewModel.getTasks().observe(viewLifecycleOwner, Observer { tasks ->
             tasks?.let {
-                taskAdapter.tasks = it
+                taskAdapter.submitList(it)
             }
         })
 

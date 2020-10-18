@@ -2,9 +2,11 @@ package com.example.android.tika.adapters
 
 import android.util.TypedValue
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.tika.data.database.Comment
 import com.example.android.tika.data.presentation.CommentItem
@@ -14,39 +16,34 @@ import com.example.android.tika.utils.getAuthor
 import kotlinx.coroutines.*
 import java.lang.IllegalArgumentException
 
-class TaskWithCommentAdapter(val scope: CoroutineScope)
-    : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class TaskWithCommentAdapter(val scope: CoroutineScope?)
+    : ListAdapter<Any, RecyclerView.ViewHolder>(TaskCommentDiffCallBack()) {
 
     companion object {
         const val TITLE = 0
         const val COMMENT = 1
     }
 
-    var items = listOf<Any>()
-        set(value) {
-            val diffCallBack = TaskCommentDiffCallBack(items, value)
-            val diffResult = DiffUtil.calculateDiff(diffCallBack)
+    class TaskCommentDiffCallBack : DiffUtil.ItemCallback<Any>() {
+        override fun areItemsTheSame(old: Any, new: Any): Boolean {
+            var result = false
+            if (old::class.simpleName == new::class.simpleName) {
+                if (old is Comment && new is Comment) result = old.commentId == new.commentId
+                else result = areContentsTheSame(old, new)
+            }
 
-            field = value
-
-            diffResult.dispatchUpdatesTo(this)
+            return result
         }
 
-    class TaskCommentDiffCallBack(val oldItems: List<Any>, val newItems: List<Any>) :
-        DiffUtil.Callback() {
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            val old = oldItems[oldItemPosition]
-            val new = newItems[newItemPosition]
-            return old::class.simpleName == new::class.simpleName && old == new
+        override fun areContentsTheSame(old: Any, new: Any): Boolean {
+            var result: Boolean
+            if (old is String && new is String) {
+                result = (old as String) == (new as String)
+            } else result = (old as Comment) == (new as Comment)
+
+            return result
         }
 
-        override fun getOldListSize(): Int = oldItems.size
-
-        override fun getNewListSize(): Int = newItems.size
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return areItemsTheSame(oldItemPosition, newItemPosition)
-        }
     }
 
     class TitleViewHolder(private val itemBinding: TaskTitleItemBinding) :
@@ -66,14 +63,22 @@ class TaskWithCommentAdapter(val scope: CoroutineScope)
                 titleText.layoutParams = layoutParams
             }
         }
+
+        companion object {
+            fun from(parent: ViewGroup): RecyclerView.ViewHolder {
+                val attachToParent = false
+                val inflater = LayoutInflater.from(parent.context)
+                return TitleViewHolder(TaskTitleItemBinding.inflate(inflater, parent, attachToParent))
+            }
+        }
     }
 
-    class CommentViewHolder(private val itemBinding: CommentLayoutBinding) :
+    class CommentViewHolder private constructor(private val itemBinding: CommentLayoutBinding) :
             RecyclerView.ViewHolder(itemBinding.root) {
-        fun bind(item: Any, scope: CoroutineScope) {
-            scope.launch {
+        fun bind(item: Any, scope: CoroutineScope?) {
+            scope?.launch {
                 val entity = item as Comment
-                val comment = CommentItem(entity, null)
+                val comment = CommentItem(entity.commentId, entity.message, null)
                 comment.author = author(entity)
                 itemBinding.comment = comment
             }
@@ -85,28 +90,35 @@ class TaskWithCommentAdapter(val scope: CoroutineScope)
                 getAuthor(context, entity)
             }
         }
+
+        companion object {
+            fun from(parent: ViewGroup): RecyclerView.ViewHolder {
+                val attachToParent = false
+                val inflater = LayoutInflater.from(parent.context)
+                return CommentViewHolder(CommentLayoutBinding.inflate(inflater, parent, attachToParent))
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            TITLE -> TitleViewHolder(TaskTitleItemBinding.inflate(inflater, parent, false))
-            COMMENT -> CommentViewHolder(CommentLayoutBinding.inflate(inflater, parent, false))
+            TITLE -> TitleViewHolder.from(parent)
+            COMMENT -> CommentViewHolder.from(parent)
             else -> throw IllegalArgumentException("Unknown ViewType $viewType")
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val  item = getItem(position)
         when (holder.itemViewType) {
-            TITLE -> (holder as TitleViewHolder).bind(items[position])
-            COMMENT -> (holder as CommentViewHolder).bind(items[position], scope)
+            TITLE -> (holder as TitleViewHolder).bind(item)
+            COMMENT -> (holder as CommentViewHolder).bind(item, scope)
             else ->  throw IllegalArgumentException("Unknown ViewType ${holder.itemViewType}")
         }
     }
 
-    override fun getItemCount(): Int = items.size
-
     override fun getItemViewType(position: Int): Int {
-        return if (items[position] is String) TITLE else COMMENT
+        val item = getItem(position)
+        return if (item is String) TITLE else COMMENT
     }
 }
