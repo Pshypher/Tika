@@ -40,7 +40,7 @@ class DashboardFragment : Fragment() {
         activityAdapter.scope = viewModel.getCoroutineScope()
         viewModel.getActivities().observe(viewLifecycleOwner, Observer { activities ->
             activities?.let {
-                activityAdapter.items = it
+                activityAdapter.submitList(it)
             }
         })
 
